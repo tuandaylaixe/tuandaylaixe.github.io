@@ -159,6 +159,20 @@
             border: 1px solid #ccc;
             border-radius: 4px;
             box-sizing: border-box;
+            outline: none;
+        }
+
+        /* CSS báo lỗi */
+        .form-group input.input-error {
+            border: 2px solid #ff4d4d !important;
+            background-color: #fff6f6;
+        }
+
+        .error-message {
+            color: #ff4d4d;
+            font-size: 13px;
+            margin-top: 5px;
+            display: none;
         }
 
         .btn-submit {
@@ -227,12 +241,14 @@
             <form id="secureRegisterForm" onsubmit="handleSubmit(event)">
                 <div class="form-group">
                     <label for="fullname">Họ và Tên:</label>
-                    <input type="text" id="fullname" required placeholder="Ví dụ: Nguyễn Văn A">
+                    <input type="text" id="fullname" required placeholder="Ví dụ: Nguyễn Văn Nguyễn" oninput="validateInput(this, 'name')">
+                    <div id="fullname-error" class="error-message">Họ và tên phải có khoảng trắng và dài hơn 9 ký tự!</div>
                 </div>
 
                 <div class="form-group">
                     <label for="phone">Số Điện thoại (Zalo):</label>
-                    <input type="tel" id="phone" required placeholder="Ví dụ: 0912345678">
+                    <input type="tel" id="phone" required placeholder="Ví dụ: 0912345678" oninput="validateInput(this, 'phone')">
+                    <div id="phone-error" class="error-message">Số điện thoại phải có đúng 10 số (không thiếu, không thừa)!</div>
                 </div>
 
                 <div class="form-group">
@@ -258,13 +274,61 @@
     <script>
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxtevVqq9kKKVBjLkmxsnY-AAna_HVYlsKwiYO3zglcOp00sVwgNonsvGSKTYsQv5iX/exec";
 
+        // Hàm kiểm tra real-time khi người dùng gõ phím
+        function validateInput(inputElement, type) {
+            const val = inputElement.value;
+            const errorDiv = document.getElementById(`${inputElement.id}-error`);
+            let isValid = true;
+
+            if (type === 'name') {
+                // Điều kiện mới: Có chứa khoảng trắng VÀ tổng độ dài lớn hơn 9 ký tự
+                isValid = val.includes(' ') && val.length > 9;
+            } else if (type === 'phone') {
+                // Điều kiện: Phải là số và có ĐÚNG 10 số (không thừa không thiếu)
+                const phoneRegex = /^[0-9]{10}$/;
+                isValid = phoneRegex.test(val);
+            }
+
+            if (isValid) {
+                inputElement.classList.remove('input-error');
+                errorDiv.style.display = 'none';
+                return true;
+            } else {
+                return false;
+            }
+        }
+
         function handleSubmit(event) {
             event.preventDefault();
             
             const submitBtn = document.getElementById('submitBtn');
-            const name = document.getElementById('fullname').value;
-            const phone = document.getElementById('phone').value;
+            const nameInput = document.getElementById('fullname');
+            const phoneInput = document.getElementById('phone');
+            
+            const name = nameInput.value;
+            const phone = phoneInput.value;
             const course = document.getElementById('course').value;
+
+            let hasError = false;
+
+            // Kiểm tra Họ tên khi bấm Submit (> 9 chữ cái và có khoảng trắng)
+            if (!name.includes(' ') || name.length <= 9) {
+                nameInput.classList.add('input-error');
+                document.getElementById('fullname-error').style.display = 'block';
+                hasError = true;
+            }
+
+            // Kiểm tra Số điện thoại khi bấm Submit (đúng 10 số)
+            const phoneRegex = /^[0-9]{10}$/;
+            if (!phoneRegex.test(phone)) {
+                phoneInput.classList.add('input-error');
+                document.getElementById('phone-error').style.display = 'block';
+                hasError = true;
+            }
+
+            if (hasError) {
+                return false;
+            }
             
             submitBtn.innerText = "Đang xử lý...";
             submitBtn.disabled = true;
