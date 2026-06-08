@@ -192,6 +192,12 @@
             box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.15);
         }
 
+        /* Định dạng class lỗi viền đỏ */
+        input.input-error {
+            border-color: #d93025 !important;
+            box-shadow: 0 0 0 4px rgba(217, 48, 37, 0.15) !important;
+        }
+
         button {
             width: 100%;
             padding: 16px;
@@ -339,7 +345,7 @@
             <form id="regForm">
                 <div class="form-group">
                     <label for="name">Họ và tên học viên</label>
-                    <input type="text" id="name" required placeholder="Ví dụ: Nguyễn Văn Cường">
+                    <input type="text" id="name" required placeholder="Ví dụ: Nguyễn Văn A">
                 </div>
                 <div class="form-group">
                     <label for="phone">Số điện thoại liên hệ</label>
@@ -353,6 +359,7 @@
                         <option value="Hạng B1">Hạng B1 (Ô tô số tự động)</option>
                         <option value="Hạng B2">Hạng B2 (Ô tô số sàn)</option>
                         <option value="Hạng C">Hạng C (Xe tải)</option>
+                        <option value="Hạng C1">Hạng C1 (Xe tải)</option>
                     </select>
                 </div>
                 <button type="submit" id="submitBtn">Đăng Ký Khóa Học</button>
@@ -362,7 +369,7 @@
     </div>
 
     <footer>
-        <p>© 2026 tuandaylaixe — baomauconnect.asia. Trải nghiệm tối ưu, xử lý thông tin bảo mật.</p>
+        <p>© 2026 tuandaylaixe . Trải nghiệm tối ưu, xử lý thông tin bảo mật.</p>
     </footer>
 </div>
 
@@ -384,20 +391,60 @@
 <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxtevVqq9kKKVBjLkmxsnY-AAna_HVYlsKwiYO3zglcOp00sVwgNonsvGSKTYsQv5iX/exec";
 
+    // Lắng nghe sự kiện gõ phím để xóa viền đỏ khi người dùng sửa sai
+    document.getElementById('name').addEventListener('input', function() {
+        this.classList.remove('input-error');
+    });
+    document.getElementById('phone').addEventListener('input', function() {
+        this.classList.remove('input-error');
+    });
+
     // Xử lý gửi Form Đăng Ký
     document.getElementById('regForm').addEventListener('submit', function(e) {
         e.preventDefault();
+        
+        const nameInput = document.getElementById('name');
+        const phoneInput = document.getElementById('phone');
         const submitBtn = document.getElementById('submitBtn');
         const messageDiv = document.getElementById('message');
         
+        const nameValue = nameInput.value.trim();
+        const phoneValue = phoneInput.value.trim();
+
+        // Loại bỏ trạng thái lỗi cũ
+        nameInput.classList.remove('input-error');
+        phoneInput.classList.remove('input-error');
+        messageDiv.style.display = "none";
+
+        // 1. Kiểm tra điều kiện Họ và tên (phải chứa dấu cách và > 9 ký tự)
+        if (!nameValue.includes(' ') || nameValue.length <= 9) {
+            nameInput.classList.add('input-error');
+            messageDiv.className = "error";
+            messageDiv.innerText = "Họ và tên không hợp lệ! Vui lòng nhập đầy đủ họ tên (phải có dấu cách và nhiều hơn 9 chữ cái).";
+            messageDiv.style.display = "block";
+            nameInput.focus();
+            return;
+        }
+
+        // 2. Kiểm tra điều kiện Số điện thoại (phải là số và đúng 10 ký tự)
+        const phoneRegex = /^[0-9]{10}$/;
+        if (!phoneRegex.test(phoneValue)) {
+            phoneInput.classList.add('input-error');
+            messageDiv.className = "error";
+            messageDiv.innerText = "Số điện thoại không hợp lệ! Vui lòng nhập chính xác 10 chữ số.";
+            messageDiv.style.display = "block";
+            phoneInput.focus();
+            return;
+        }
+        
+        // Nếu vượt qua tất cả validation mới bắt đầu gửi dữ liệu
         submitBtn.disabled = true;
         submitBtn.innerText = "Đang truyền dữ liệu...";
-        messageDiv.style.display = "none";
 
         const data = {
             action: "register",
-            name: document.getElementById('name').value,
-            phone: document.getElementById('phone').value,
+            name: nameValue,
+            phone: phoneValue,
             course: document.getElementById('course').value
         };
 
