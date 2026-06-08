@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Quản Lý Học Viên | tuandaylaixe</title>
+    <title>Dashboard Admin | tuandaylaixe</title>
     <style>
         :root {
             --bg-color: #f5f5f7;
@@ -11,14 +11,14 @@
             --text-main: #1d1d1f;
             --text-sub: #86868b;
             --accent: #0071e3;
-            --radius: 12px;
+            --radius: 14px;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
         body { background-color: var(--bg-color); color: var(--text-main); padding: 40px 20px; }
@@ -29,11 +29,11 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
-            border-bottom: 1px solid #d2d2d7;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
             padding-bottom: 20px;
         }
 
-        header h1 { font-size: 2rem; font-weight: 700; }
+        header h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.02em; }
         
         .btn-refresh {
             padding: 10px 20px;
@@ -43,21 +43,25 @@
             border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
+            transition: opacity 0.2s;
         }
+        .btn-refresh:hover { opacity: 0.9; }
 
         .card {
             background: var(--card-bg);
             border-radius: var(--radius);
             padding: 24px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
             overflow-x: auto;
         }
 
         table { width: 100%; border-collapse: collapse; text-align: left; }
-        th { background-color: #f2f2f7; padding: 14px; font-weight: 600; border-bottom: 2px solid #d2d2d7; }
-        td { padding: 14px; border-bottom: 1px solid #f2f2f7; }
+        th { background-color: #f2f2f7; padding: 16px; font-weight: 600; font-size: 0.95rem; border-bottom: 2px solid #d2d2d7; }
+        td { padding: 16px; border-bottom: 1px solid #f2f2f7; font-size: 0.95rem; }
         tr:hover { background-color: #fafafa; }
         .loading { text-align: center; padding: 40px; color: var(--text-sub); font-style: italic; }
+        
+        .phone-link { color: var(--accent); text-decoration: none; font-weight: 500; }
     </style>
 </head>
 <body>
@@ -65,25 +69,25 @@
 <div class="container">
     <header>
         <div>
-            <h1>Hệ Thống Quản Lý Học Viên</h1>
-            <p style="color: var(--text-sub);">Thương hiệu: tuandaylaixe (baomauconnect.asia)</p>
+            <h1>Danh Sách Học Viên Đăng Ký</h1>
+            <p style="color: var(--text-sub);">Hệ thống đồng bộ dữ liệu Realtime Google Sheets</p>
         </div>
-        <button class="btn-refresh" onclick="fetchLeads()">Tải Lại Dữ Liệu</button>
+        <button class="btn-refresh" onclick="fetchLeads()">Tải lại trang</button>
     </header>
 
     <div class="card">
-        <table id="leadsTable">
+        <table>
             <thead>
                 <tr>
                     <th>Thời Gian Đăng Ký</th>
-                    <th>Họ và Tên</th>
+                    <th>Tên Học Viên</th>
                     <th>Số Điện Thoại</th>
-                    <th>Khóa Học</th>
+                    <th>Hạng Bằng Chọn</th>
                 </tr>
             </thead>
             <tbody id="leadsBody">
                 <tr>
-                    <td colspan="4" class="loading">Đang tải danh sách học viên...</td>
+                    <td colspan="4" class="loading">Đang tải thông tin học viên...</td>
                 </tr>
             </tbody>
         </table>
@@ -95,29 +99,29 @@
 
     function fetchLeads() {
         const tbody = document.getElementById('leadsBody');
-        tbody.innerHTML = '<tr><td colspan="4" class="loading">Đang cập nhật dữ liệu từ Google Sheets...</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="4" class="loading">Đang nạp dữ liệu mới nhất từ Cloud...</td></tr>';
 
         fetch(`${SCRIPT_URL}?action=getLeads`)
         .then(response => response.json())
         .then(data => {
             tbody.innerHTML = '';
             if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="loading">Chưa có học viên nào đăng ký.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="4" class="loading">Chưa có dữ liệu đăng ký mới.</td></tr>';
                 return;
             }
-            data.reverse().forEach(lead => { // Hiện người đăng ký mới nhất lên đầu
+            data.reverse().forEach(lead => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${lead.timestamp}</td>
                     <td><strong>${lead.name}</strong></td>
-                    <td><a href="tel:${lead.phone}">${lead.phone}</a></td>
+                    <td><a class="phone-link" href="tel:${lead.phone}">${lead.phone}</a></td>
                     <td>${lead.course}</td>
                 `;
                 tbody.appendChild(tr);
             });
         })
         .catch(error => {
-            tbody.innerHTML = '<tr><td colspan="4" class="loading" style="color: red;">Lỗi tải dữ liệu. Vui lòng kiểm tra lại cấu hình Web App Script.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="4" class="loading" style="color: red;">Không thể nạp dữ liệu. Đảm bảo Web App Script đã được Deploy chế độ Anyone.</td></tr>';
         });
     }
     window.onload = fetchLeads;

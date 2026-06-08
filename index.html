@@ -4,212 +4,394 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>tuandaylaixe - Trung Tâm Đào Tạo Lái Xe Uy Tín</title>
+    <!-- Nhúng thư viện CryptoJS để mã hóa MD5 bảo mật ngay trên trình duyệt -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <style>
         :root {
             --bg-color: #f5f5f7;
-            --card-bg: #ffffff;
+            --card-bg: rgba(255, 255, 255, 0.85);
             --text-main: #1d1d1f;
             --text-sub: #86868b;
             --accent: #0071e3;
             --accent-gradient: linear-gradient(135deg, #0071e3, #40a9ff);
-            --radius: 12px;
+            --radius-lg: 16px;
+            --radius-sm: 10px;
+            --blur: saturate(180%) blur(20px);
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Icons", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
         }
 
         body {
             background-color: var(--bg-color);
             color: var(--text-main);
-            line-height: 1.5;
-            padding: 40px 20px;
+            line-height: 1.47059;
+            font-weight: 400;
+            letter-spacing: -.022em;
+            padding: 0 20px;
         }
 
-        .container {
-            max-width: 900px;
+        /* Top Navigation Bar */
+        nav {
+            max-width: 1100px;
             margin: 0 auto;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        header h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            letter-spacing: -0.03em;
-            margin-bottom: 8px;
-        }
-
-        header p {
-            color: var(--text-sub);
-            font-size: 1.1rem;
-        }
-
-        .card {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            padding: 30px;
-            margin-bottom: 24px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            border: 1px solid rgba(0, 0, 0, 0.02);
-        }
-
-        .card h2 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 15px;
-            border-left: 4px solid var(--accent);
-            padding-left: 12px;
-        }
-
-        .course-list {
-            list-style: none;
-            margin-top: 15px;
-        }
-
-        .course-list li {
-            padding: 10px 0;
-            border-bottom: 1px solid #f2f2f7;
+            padding: 20px 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .course-list li:last-child {
-            border-bottom: none;
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            background: linear-gradient(90deg, #1d1d1f, #0071e3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .price {
+        .admin-link {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-sub);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            background: rgba(0, 0, 0, 0.04);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .admin-link:hover {
+            background: rgba(0, 0, 0, 0.08);
+            color: var(--text-main);
+        }
+
+        /* Main Layout Container */
+        .container {
+            max-width: 1100px;
+            margin: 20px auto 60px auto;
+        }
+
+        /* Hero Banner Section */
+        .hero {
+            text-align: center;
+            padding: 40px 0 60px 0;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: -0.04em;
+            margin-bottom: 12px;
+            line-height: 1.1;
+        }
+
+        .hero p {
+            color: var(--text-sub);
+            font-size: 1.3rem;
+            font-weight: 400;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Bố cục lưới 2 cột bất đối xứng kiểu Apple */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: 32px;
+            align-items: start;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .card h2 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-bottom: 24px;
+        }
+
+        /* Danh sách khóa học được làm đẹp chi tiết */
+        .course-item {
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        }
+
+        .course-item:first-child { padding-top: 0; }
+        .course-item:last-child { border-bottom: none; padding-bottom: 0; }
+
+        .course-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .course-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+        }
+
+        .course-tag {
+            font-size: 0.8rem;
             font-weight: 600;
             color: var(--accent);
+            background: rgba(0, 113, 227, 0.08);
+            padding: 4px 10px;
+            border-radius: 20px;
         }
 
+        .course-desc {
+            font-size: 0.95rem;
+            color: var(--text-sub);
+        }
+
+        /* Form thiết kế hiện đại nhập liệu */
         .form-group {
-            margin-bottom: 16px;
+            margin-bottom: 20px;
         }
 
         label {
             display: block;
-            font-size: 0.9rem;
-            font-weight: 500;
-            margin-bottom: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-main);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
         }
 
         input, select {
             width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #d2d2d7;
-            background-color: #fff;
+            padding: 14px 16px;
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            background-color: rgba(255, 255, 255, 0.8);
             font-size: 1rem;
             outline: none;
+            transition: all 0.2s ease;
         }
 
         input:focus, select:focus {
             border-color: var(--accent);
+            background-color: #fff;
+            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.15);
         }
 
         button {
             width: 100%;
-            padding: 14px;
+            padding: 16px;
             background: var(--accent-gradient);
             color: #fff;
             border: none;
-            border-radius: 8px;
-            font-size: 1rem;
+            border-radius: var(--radius-sm);
+            font-size: 1.05rem;
             font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0, 113, 227, 0.3);
+            box-shadow: 0 4px 12px rgba(0, 113, 227, 0.25);
+            transition: all 0.2s ease;
         }
 
-        button:hover { opacity: 0.9; }
+        button:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
 
         #message {
-            margin-top: 15px;
-            padding: 12px;
-            border-radius: 6px;
+            margin-top: 20px;
+            padding: 14px;
+            border-radius: var(--radius-sm);
             text-align: center;
             font-size: 0.95rem;
             display: none;
+            font-weight: 500;
         }
 
         .success { background-color: #e2f5ea; color: #1a7f37; }
         .error { background-color: #fce8e6; color: #d93025; }
 
+        /* Modal Đăng Nhập Hệ Thống bảo mật */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: #fff;
+            padding: 32px;
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 360px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            text-align: center;
+        }
+
+        .modal-content h3 { margin-bottom: 12px; font-size: 1.3rem; font-weight: 600; }
+        .modal-content p { color: var(--text-sub); font-size: 0.9rem; margin-bottom: 20px; }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .btn-sec {
+            background: #e8e8ed;
+            color: var(--text-main);
+            box-shadow: none;
+        }
+        .btn-sec:hover { background: #d2d2d7; }
+
         footer {
             text-align: center;
-            margin-top: 40px;
+            margin-top: 60px;
             color: var(--text-sub);
             font-size: 0.85rem;
+        }
+
+        /* Responsive di động */
+        @media (max-width: 768px) {
+            .main-grid { grid-template-columns: 1fr; gap: 24px; }
+            .hero h1 { font-size: 2.2rem; }
+            .card { padding: 24px; }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <header>
-        <h1>tuandaylaixe</h1>
-        <p>Học Lái Xe Tận Tâm — Vững Tay Lái, An Tâm Thi Đỗ</p>
-    </header>
+<nav>
+    <div class="logo">tuandaylaixe</div>
+    <div class="admin-link" onclick="openAdminModal()">Hệ thống Admin</div>
+</nav>
 
-    <div class="card">
-        <h2>Các Khóa Đào Tạo Nổi Bật</h2>
-        <ul class="course-list">
-            <li><span>Hạng A1 (Xe máy thông dụng dưới 175cc)</span> <span class="price">Trọn gói gọn nhẹ</span></li>
-            <li><span>Hạng A2 (Mô tô phân khối lớn trên 175cc)</span> <span class="price">Thi nhanh chóng</span></li>
-            <li><span>Hạng B1 (Ô tô số tự động - Gia đình)</span> <span class="price">Xe đời mới, sạch sẽ</span></li>
-            <li><span>Hạng B2 (Ô tô số sàn - Kinh doanh)</span> <span class="price">Học 1 kèm 1, linh hoạt</span></li>
-            <li><span>Hạng C (Xe tải lớn)</span> <span class="price">Học nhanh, bao chuẩn</span></li>
-        </ul>
+<div class="container">
+    <div class="hero">
+        <h1>Học Lái Xe Tận Tâm</h1>
+        <p>Vững tay lái trên mọi cung đường, hỗ trợ tỉ lệ thi đỗ cao nhất.</p>
     </div>
 
-    <div class="card">
-        <h2>Đăng Ký Tư Vấn & Nhận Ưu Đãi</h2>
-        <form id="regForm">
-            <div class="form-group">
-                <label for="name">Họ và tên</label>
-                <input type="text" id="name" required placeholder="Nguyễn Văn A">
+    <div class="main-grid">
+        <!-- Cột thông tin khóa học (Bên trái) -->
+        <div class="card">
+            <h2>Chương Trình Đào Tạo Toàn Diện</h2>
+            
+            <div class="course-item">
+                <div class="course-header">
+                    <span class="course-title">Hạng A1 / A2</span>
+                    <span class="course-tag">Xe Máy & Mô Tô</span>
+                </div>
+                <p class="course-desc">Học nhanh gọn, cung cấp mẹo học 200 câu hỏi, lịch thi liên tục hàng tuần.</p>
             </div>
-            <div class="form-group">
-                <label for="phone">Số điện thoại</label>
-                <input type="tel" id="phone" required placeholder="09xxxxxxxx">
+
+            <div class="course-item">
+                <div class="course-header">
+                    <span class="course-title">Hạng B1 (Số tự động)</span>
+                    <span class="course-tag">Ô Tô Gia Đình</span>
+                </div>
+                <p class="course-desc">Phù hợp cho nhu cầu lái xe gia đình. Cam kết học trên xe đời mới, sạch sẽ, máy lạnh mát rượi.</p>
             </div>
-            <div class="form-group">
-                <label for="course">Khóa học quan tâm</label>
-                <select id="course">
-                    <option value="Hạng A1">Hạng A1 (Xe máy)</option>
-                    <option value="Hạng A2">Hạng A2 (Mô tô)</option>
-                    <option value="Hạng B1">Hạng B1 (Ô tô tự động)</option>
-                    <option value="Hạng B2">Hạng B2 (Ô tô số sàn)</option>
-                    <option value="Hạng C">Hạng C (Xe tải)</option>
-                </select>
+
+            <div class="course-item">
+                <div class="course-header">
+                    <span class="course-title">Hạng B2 (Số sàn)</span>
+                    <span class="course-tag">Kinh Doanh Vận Tải</span>
+                </div>
+                <p class="course-desc">Đào tạo bài bản theo chương trình chuẩn để chạy xe dịch vụ, taxi, xe công ty. Học 1 kèm 1 linh hoạt.</p>
             </div>
-            <button type="submit" id="submitBtn">Gửi Đăng Ký Ngay</button>
-        </form>
-        <div id="message"></div>
+
+            <div class="course-item">
+                <div class="course-header">
+                    <span class="course-title">Hạng C</span>
+                    <span class="course-tag">Xe Tải Lớn</span>
+                </div>
+                <p class="course-desc">Dành cho học viên định hướng lái xe tải trọng tải lớn, thời gian đào tạo tối ưu, cam kết không phát sinh chi phí.</p>
+            </div>
+        </div>
+
+        <!-- Cột đăng ký tư vấn (Bên phải) -->
+        <div class="card">
+            <h2>Nhận Tư Vấn Miễn Phí</h2>
+            <form id="regForm">
+                <div class="form-group">
+                    <label for="name">Họ và tên học viên</label>
+                    <input type="text" id="name" required placeholder="Ví dụ: Nguyễn Văn Cường">
+                </div>
+                <div class="form-group">
+                    <label for="phone">Số điện thoại liên hệ</label>
+                    <input type="tel" id="phone" required placeholder="09xxxxxxxx">
+                </div>
+                <div class="form-group">
+                    <label for="course">Lựa chọn hạng bằng</label>
+                    <select id="course">
+                        <option value="Hạng A1">Hạng A1 (Xe máy thông dụng)</option>
+                        <option value="Hạng A2">Hạng A2 (Mô tô phân khối lớn)</option>
+                        <option value="Hạng B1">Hạng B1 (Ô tô số tự động)</option>
+                        <option value="Hạng B2">Hạng B2 (Ô tô số sàn)</option>
+                        <option value="Hạng C">Hạng C (Xe tải)</option>
+                    </select>
+                </div>
+                <button type="submit" id="submitBtn">Đăng Ký Khóa Học</button>
+            </form>
+            <div id="message"></div>
+        </div>
     </div>
 
     <footer>
-        <p>© 2026 tuandaylaixe — baomauconnect.asia. Thiết kế tối giản tối ưu trải nghiệm.</p>
+        <p>© 2026 tuandaylaixe — baomauconnect.asia. Trải nghiệm tối ưu, xử lý thông tin bảo mật.</p>
     </footer>
+</div>
+
+<!-- Giao diện Khung đăng nhập bảo mật Admin -->
+<div class="modal" id="adminModal">
+    <div class="modal-content">
+        <h3>Xác thực Quản trị viên</h3>
+        <p>Vui lòng nhập mật khẩu để truy cập hệ thống dữ liệu học viên.</p>
+        <div class="form-group">
+            <input type="password" id="adminPassword" placeholder="Nhập mật khẩu..." onkeydown="if(event.key === 'Enter') verifyAndRedirect()">
+        </div>
+        <div class="modal-buttons">
+            <button class="btn-sec" onclick="closeAdminModal()">Hủy bỏ</button>
+            <button onclick="verifyAndRedirect()">Đăng Nhập</button>
+        </div>
+    </div>
 </div>
 
 <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxtevVqq9kKKVBjLkmxsnY-AAna_HVYlsKwiYO3zglcOp00sVwgNonsvGSKTYsQv5iX/exec";
 
+    // Xử lý gửi Form Đăng Ký
     document.getElementById('regForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const submitBtn = document.getElementById('submitBtn');
         const messageDiv = document.getElementById('message');
         
         submitBtn.disabled = true;
-        submitBtn.innerText = "Đang gửi thông tin...";
+        submitBtn.innerText = "Đang truyền dữ liệu...";
         messageDiv.style.display = "none";
 
         const data = {
@@ -227,20 +409,50 @@
         })
         .then(() => {
             messageDiv.className = "success";
-            messageDiv.innerText = "Đăng ký thành công! Thầy Tuấn sẽ liên hệ bạn sớm nhất.";
+            messageDiv.innerText = "Đăng ký thành công! Thầy Tuấn sẽ gọi điện hỗ trợ bạn ngay.";
             messageDiv.style.display = "block";
             document.getElementById('regForm').reset();
         })
         .catch(error => {
             messageDiv.className = "error";
-            messageDiv.innerText = "Có lỗi xảy ra. Vui lòng thử lại.";
+            messageDiv.innerText = "Gặp lỗi kết nối mạng. Xin vui lòng liên hệ hotline.";
             messageDiv.style.display = "block";
         })
         .finally(() => {
             submitBtn.disabled = false;
-            submitBtn.innerText = "Gửi Đăng Ký Ngay";
+            submitBtn.innerText = "Đăng Ký Khóa Học";
         });
     });
+
+    // Các hàm điều khiển Modal Đăng Nhập Admin & Check MD5
+    function openAdminModal() {
+        document.getElementById('adminModal').style.display = 'flex';
+        document.getElementById('adminPassword').focus();
+    }
+
+    function closeAdminModal() {
+        document.getElementById('adminModal').style.display = 'none';
+        document.getElementById('adminPassword').value = '';
+    }
+
+    function verifyAndRedirect() {
+        const inputPassword = document.getElementById('adminPassword').value;
+        
+        // Tạo chuỗi băm MD5 của mật khẩu nhập vào
+        const hashedPassword = CryptoJS.MD5(inputPassword).toString();
+        
+        // Mã MD5 tương ứng của mật khẩu "020304" là "81dc9bdb52d04dc20036dbd8313ed055"
+        const targetHash = "892af2053f41e4e1da20337668648859";
+
+        if (hashedPassword === targetHash) {
+            // Chuyển hướng nếu đúng mật khẩu
+            window.location.href = "admin.html";
+        } else {
+            alert("Mật khẩu quản trị không chính xác!");
+            document.getElementById('adminPassword').value = '';
+            document.getElementById('adminPassword').focus();
+        }
+    }
 </script>
 </body>
 </html>
