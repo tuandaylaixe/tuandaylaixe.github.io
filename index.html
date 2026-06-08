@@ -281,10 +281,8 @@
             let isValid = true;
 
             if (type === 'name') {
-                // Điều kiện mới: Có chứa khoảng trắng VÀ tổng độ dài lớn hơn 9 ký tự
                 isValid = val.includes(' ') && val.length > 9;
             } else if (type === 'phone') {
-                // Điều kiện: Phải là số và có ĐÚNG 10 số (không thừa không thiếu)
                 const phoneRegex = /^[0-9]{10}$/;
                 isValid = phoneRegex.test(val);
             }
@@ -311,14 +309,12 @@
 
             let hasError = false;
 
-            // Kiểm tra Họ tên khi bấm Submit (> 9 chữ cái và có khoảng trắng)
             if (!name.includes(' ') || name.length <= 9) {
                 nameInput.classList.add('input-error');
                 document.getElementById('fullname-error').style.display = 'block';
                 hasError = true;
             }
 
-            // Kiểm tra Số điện thoại khi bấm Submit (đúng 10 số)
             const phoneRegex = /^[0-9]{10}$/;
             if (!phoneRegex.test(phone)) {
                 phoneInput.classList.add('input-error');
@@ -333,6 +329,7 @@
             submitBtn.innerText = "Đang xử lý...";
             submitBtn.disabled = true;
 
+            // Sử dụng URLSearchParams mã hóa đồng bộ cấu trúc x-www-form-urlencoded gửi lên Apps Script
             const formData = new URLSearchParams();
             formData.append('fullname', name);
             formData.append('phone', phone);
@@ -340,7 +337,7 @@
 
             fetch(GOOGLE_SCRIPT_URL, {
                 method: 'POST',
-                body: formData,
+                body: formData.toString(), // Chuyển thành chuỗi mã hóa text thuần
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
@@ -351,7 +348,7 @@
                     alert(`Đăng ký thành công! Cảm ơn ${name}, trung tâm sẽ liên hệ với bạn sớm nhất.`);
                     document.getElementById('secureRegisterForm').reset();
                 } else {
-                    alert("Có lỗi lưu trữ dữ liệu từ hệ thống bảng tính.");
+                    alert("Có lỗi lưu trữ dữ liệu từ hệ thống bảng tính: " + data.error);
                 }
             })
             .catch(error => {
