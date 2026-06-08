@@ -3,286 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ Thống Quản Lý Học Viên</title>
-    
+    <title>Admin - Quản Lý Học Viên | tuandaylaixe</title>
     <style>
         :root {
-            --primary-color: #FFB300;
-            --dark-color: #111111;
-            --bg-light: #F9F9F9;
-            --text-color: #333333;
+            --bg-color: #f5f5f7;
+            --card-bg: #ffffff;
+            --text-main: #1d1d1f;
+            --text-sub: #86868b;
+            --accent: #0071e3;
+            --radius: 12px;
         }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-            color: var(--text-color);
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            background-color: #f5f5f5;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
-        /* KHU VỰC FORM ĐĂNG NHẬP TRỰC TIẾP TRÊN TRANG VÀO */
-        .login-container {
-            max-width: 400px;
-            margin: 100px auto padding;
-            margin-top: 100px;
-            background: #ffffff;
-            padding: 40px 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            text-align: center;
-            box-sizing: border-box;
-        }
+        body { background-color: var(--bg-color); color: var(--text-main); padding: 40px 20px; }
+        .container { max-width: 1000px; margin: 0 auto; }
 
-        .login-container h3 {
-            margin-top: 0;
-            font-size: 22px;
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #555;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 16px;
-            box-sizing: border-box;
-            outline: none;
-        }
-
-        .input-group input:focus {
-            border-color: var(--primary-color);
-        }
-
-        .btn-login {
-            background-color: var(--dark-color);
-            color: white;
-            border: none;
-            width: 100%;
-            padding: 12px;
-            border-radius: 4px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .btn-login:hover {
-            background-color: var(--primary-color);
-            color: var(--dark-color);
-        }
-
-        /* GIAO DIỆN TRANG WEB ADMIN CHÍNH (MẶC ĐỊNH ẨN) */
-        #adminDashboard {
-            display: none; 
-            padding: 30px 5%;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .admin-header-box {
+        header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 2px solid #ddd;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 15px;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #d2d2d7;
+            padding-bottom: 20px;
         }
 
-        .admin-header-box h2 {
-            margin: 0;
-            font-size: 22px;
-            color: var(--dark-color);
-        }
-
-        .admin-tools {
-            display: flex;
-            gap: 10px;
-        }
-
-        /* Bảng hiển thị thông tin học viên */
-        .admin-table {
-            width: 100%;
-            border-collapse: collapse;
-            background: #ffffff;
-            border-radius: 6px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-        }
-
-        .admin-table th, .admin-table td {
-            border: 1px solid #eeeeee;
-            padding: 14px 12px;
-            text-align: left;
-        }
-
-        .admin-table th {
-            background-color: var(--dark-color);
-            color: #ffffff;
-            font-weight: 600;
-        }
-
-        .admin-table tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-
-        .admin-table tr:hover {
-            background-color: #f1f1f1;
-        }
-
+        header h1 { font-size: 2rem; font-weight: 700; }
+        
         .btn-refresh {
-            background-color: #0275d8;
+            padding: 10px 20px;
+            background-color: var(--accent);
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
+            border-radius: 8px;
+            font-weight: 600;
             cursor: pointer;
-            font-weight: bold;
-            font-size: 14px;
         }
 
-        .btn-close {
-            background-color: #d9534f;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            text-decoration: none;
-            font-size: 14px;
-            display: inline-block;
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            overflow-x: auto;
         }
 
-        .loading-text {
-            text-align: center;
-            font-size: 16px;
-            color: #666;
-            padding: 40px;
-            font-weight: 500;
-        }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background-color: #f2f2f7; padding: 14px; font-weight: 600; border-bottom: 2px solid #d2d2d7; }
+        td { padding: 14px; border-bottom: 1px solid #f2f2f7; }
+        tr:hover { background-color: #fafafa; }
+        .loading { text-align: center; padding: 40px; color: var(--text-sub); font-style: italic; }
     </style>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 </head>
 <body>
 
-    <div id="loginBox" class="login-container">
-        <h3>🔒 Đăng Nhập Quản Trị</h3>
-        <form id="loginForm" onsubmit="handleLogin(event)">
-            <div class="input-group">
-                <label for="adminPass">Mật khẩu hệ thống:</label>
-                <input type="password" id="adminPass" placeholder="Nhập mật khẩu tại đây..." required autofocus>
-            </div>
-            <button type="submit" class="btn-login">Xác Thực Truy Cập</button>
-        </form>
-    </div>
-
-    <div id="adminDashboard">
-        <div class="admin-header-box">
-            <h2>Hệ Thống Quản Lý Học Viên (Live từ Google Sheets)</h2>
-            <div class="admin-tools">
-                <button class="btn-refresh" onclick="fetchDataFromGoogleSheets()">Tải Lại Dữ Liệu</button>
-                <a href="index.html" class="btn-close">Quay Lại Trang Chủ</a>
-            </div>
+<div class="container">
+    <header>
+        <div>
+            <h1>Hệ Thống Quản Lý Học Viên</h1>
+            <p style="color: var(--text-sub);">Thương hiệu: tuandaylaixe (baomauconnect.asia)</p>
         </div>
-        
-        <div id="loadingStatus" class="loading-text" style="display: none;">🔄 Đang kết nối và tải dữ liệu từ hệ thống Google Sheets...</div>
+        <button class="btn-refresh" onclick="fetchLeads()">Tải Lại Dữ Liệu</button>
+    </header>
 
-        <table class="admin-table" id="adminTable">
+    <div class="card">
+        <table id="leadsTable">
             <thead>
                 <tr>
-                    <th style="width: 60px; text-align: center;">STT</th>
                     <th>Thời Gian Đăng Ký</th>
                     <th>Họ và Tên</th>
                     <th>Số Điện Thoại</th>
-                    <th>Khóa Học Chọn</th>
+                    <th>Khóa Học</th>
                 </tr>
             </thead>
-            <tbody id="adminTableBody">
-                </tbody>
+            <tbody id="leadsBody">
+                <tr>
+                    <td colspan="4" class="loading">Đang tải danh sách học viên...</td>
+                </tr>
+            </tbody>
         </table>
     </div>
+</div>
 
-    <script>
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxtevVqq9kKKVBjLkmxsnY-AAna_HVYlsKwiYO3zglcOp00sVwgNonsvGSKTYsQv5iX/exec";
-        const SECURE_HASH = "892af2053f41e4e1da20337668648859"; // MD5 của "020304"
+<script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxtevVqq9kKKVBjLkmxsnY-AAna_HVYlsKwiYO3zglcOp00sVwgNonsvGSKTYsQv5iX/exec";
 
-        // Hàm xử lý khi người dùng nhấn nút Xác Thực Đăng Nhập
-        function handleLogin(event) {
-            event.preventDefault();
-            const passwordInput = document.getElementById('adminPass').value;
-            
-            // Mã hóa chuỗi nhập vào để kiểm tra chéo với mã gốc
-            const inputHash = CryptoJS.MD5(passwordInput).toString();
+    function fetchLeads() {
+        const tbody = document.getElementById('leadsBody');
+        tbody.innerHTML = '<tr><td colspan="4" class="loading">Đang cập nhật dữ liệu từ Google Sheets...</td></tr>';
 
-            if (inputHash === SECURE_HASH) {
-                document.getElementById('loginBox').style.display = 'none';
-                document.getElementById('adminDashboard').style.display = 'block';
-                fetchDataFromGoogleSheets(); // Gọi dữ liệu học viên
-            } else {
-                alert("Mật khẩu quản trị không chính xác! Vui lòng kiểm tra lại.");
-                document.getElementById('adminPass').value = '';
+        fetch(`${SCRIPT_URL}?action=getLeads`)
+        .then(response => response.json())
+        .then(data => {
+            tbody.innerHTML = '';
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="loading">Chưa có học viên nào đăng ký.</td></tr>';
+                return;
             }
-        }
-
-        // Hàm lấy danh sách học viên từ Google Sheets về bảng
-        function fetchDataFromGoogleSheets() {
-            const loadingStatus = document.getElementById('loadingStatus');
-            const tbody = document.getElementById('adminTableBody');
-            
-            loadingStatus.style.display = "block";
-            tbody.innerHTML = ''; 
-
-            fetch(GOOGLE_SCRIPT_URL)
-            .then(response => response.json())
-            .then(res => {
-                loadingStatus.style.display = "none";
-                
-                if (res && res.result === "success") {
-                    const studentsList = res.data;
-                    
-                    if (!studentsList || studentsList.length === 0) {
-                        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#999; padding: 20px;">Chưa có học viên nào đăng ký trên hệ thống.</td></tr>`;
-                        return;
-                    }
-
-                    // Sắp xếp đưa học viên đăng ký mới nhất lên đầu bảng
-                    [...studentsList].reverse().forEach((student, index) => {
-                        const row = `<tr>
-                            <td style="text-align: center;">${index + 1}</td>
-                            <td>${student.time || 'N/A'}</td>
-                            <td><strong>${student.fullname || 'N/A'}</strong></td>
-                            <td><a href="tel:${student.phone}" style="color: #0275d8; text-decoration: none; font-weight: 500;">${student.phone || 'N/A'}</a></td>
-                            <td>${student.course || 'N/A'}</td>
-                        </tr>`;
-                        tbody.innerHTML += row;
-                    });
-                } else {
-                    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:red; padding: 20px;">Lỗi kết nối dữ liệu: ${res ? res.error : 'Không phản hồi từ Apps Script'}</td></tr>`;
-                }
-            })
-            .catch(error => {
-                loadingStatus.style.display = "none";
-                console.error("Lỗi:", error);
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:red; padding: 20px;">Không thể tải dữ liệu học viên. Vui lòng kiểm tra kết nối internet hoặc link Apps Script!</td></tr>`;
+            data.reverse().forEach(lead => { // Hiện người đăng ký mới nhất lên đầu
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${lead.timestamp}</td>
+                    <td><strong>${lead.name}</strong></td>
+                    <td><a href="tel:${lead.phone}">${lead.phone}</a></td>
+                    <td>${lead.course}</td>
+                `;
+                tbody.appendChild(tr);
             });
-        }
-    </script>
+        })
+        .catch(error => {
+            tbody.innerHTML = '<tr><td colspan="4" class="loading" style="color: red;">Lỗi tải dữ liệu. Vui lòng kiểm tra lại cấu hình Web App Script.</td></tr>';
+        });
+    }
+    window.onload = fetchLeads;
+</script>
 </body>
 </html>
