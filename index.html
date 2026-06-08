@@ -298,38 +298,15 @@
 
         function handleSubmit(event) {
             event.preventDefault();
-            
+
             const submitBtn = document.getElementById('submitBtn');
-            const nameInput = document.getElementById('fullname');
-            const phoneInput = document.getElementById('phone');
-            
-            const name = nameInput.value;
-            const phone = phoneInput.value;
+            const name = document.getElementById('fullname').value.trim();
+            const phone = document.getElementById('phone').value.trim();
             const course = document.getElementById('course').value;
 
-            let hasError = false;
-
-            if (!name.includes(' ') || name.length <= 9) {
-                nameInput.classList.add('input-error');
-                document.getElementById('fullname-error').style.display = 'block';
-                hasError = true;
-            }
-
-            const phoneRegex = /^[0-9]{10}$/;
-            if (!phoneRegex.test(phone)) {
-                phoneInput.classList.add('input-error');
-                document.getElementById('phone-error').style.display = 'block';
-                hasError = true;
-            }
-
-            if (hasError) {
-                return false;
-            }
-            
             submitBtn.innerText = "Đang xử lý...";
             submitBtn.disabled = true;
 
-            // Sử dụng URLSearchParams mã hóa đồng bộ cấu trúc x-www-form-urlencoded gửi lên Apps Script
             const formData = new URLSearchParams();
             formData.append('fullname', name);
             formData.append('phone', phone);
@@ -337,7 +314,7 @@
 
             fetch(GOOGLE_SCRIPT_URL, {
                 method: 'POST',
-                body: formData.toString(), // Chuyển thành chuỗi mã hóa text thuần
+                body: formData.toString(),
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
@@ -352,7 +329,7 @@
                 }
             })
             .catch(error => {
-                console.error('Lỗi kết nối:', error);
+                console.error('Lỗi kết nối chi tiết:', error);
                 alert('Có lỗi mạng xảy ra. Vui lòng kiểm tra lại kết nối!');
             })
             .finally(() => {
