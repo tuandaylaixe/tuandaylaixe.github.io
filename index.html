@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trung Tâm Đào Tạo Lái Xe Quốc Tế</title>
+    
+    <style>
+        :root {
+            --primary-color: #FFB300; /* Vàng hiện đại */
+            --dark-color: #111111;
+            --bg-light: #F9F9F9;
+            --text-color: #333333;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        /* Header tối giản với Menu bên tay phải */
+        .main-header {
+            background-color: var(--dark-color);
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo a {
+            color: var(--primary-color);
+            font-size: 24px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .main-nav {
+            display: flex;
+            align-items: center;
+        }
+
+        .main-nav a {
+            color: #ffffff;
+            text-decoration: none;
+            margin-left: 20px;
+            font-size: 15px;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .main-nav a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Làm nổi bật nút Quản Lý ở góc phải */
+        .main-nav a.admin-nav-btn {
+            background-color: #222;
+            padding: 6px 12px;
+            border-radius: 4px;
+            border: 1px dashed var(--primary-color);
+            color: var(--primary-color);
+            cursor: pointer;
+        }
+        
+        .main-nav a.admin-nav-btn:hover {
+            background-color: var(--primary-color);
+            color: var(--dark-color);
+        }
+
+        /* Khối Banner chính */
+        .hero-banner {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('hero-bg.jpg') center/cover no-repeat;
+            background-color: #222;
+            padding: 100px 20px;
+            text-align: center;
+            color: #fff;
+        }
+
+        .hero-banner h1 {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .hero-banner p {
+            font-size: 18px;
+            color: #ccc;
+            margin-bottom: 30px;
+        }
+
+        .btn-action {
+            background-color: var(--primary-color);
+            color: var(--dark-color);
+            padding: 12px 30px;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 5px;
+            display: inline-block;
+        }
+
+        /* Khu vực hiển thị Khóa học */
+        .section-container {
+            padding: 60px 5%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background: var(--bg-light);
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 25px;
+            box-sizing: border-box;
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: var(--dark-color);
+            border-left: 4px solid var(--primary-color);
+            padding-left: 10px;
+        }
+
+        /* Form đăng ký */
+        .form-box {
+            background-color: #ffffff;
+            border: 2px solid var(--dark-color);
+            border-radius: 8px;
+            padding: 40px;
+            max-width: 500px;
+            margin: 5px auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .btn-submit {
+            background-color: var(--dark-color);
+            color: #fff;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--primary-color);
+            color: var(--dark-color);
+        }
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="logo"><a href="#">TUẤN DẠY LÁI XE</a></div>
+        <nav class="main-nav">
+            <a href="#khoahoc">Khóa Học</a>
+            <a href="#dangky">Đăng Ký Tư Vấn</a>
+            <a href="admin.html" class="admin-nav-btn">Trang Quản Lý</a>
+        </nav>
+    </header>
+
+    <section class="hero-banner">
+        <h1>Học Lái Xe Cấp Tốc - Uy Tín Toàn Diện</h1>
+        <p>Lịch học tự chọn, xe đời mới, giáo viên tận tâm</p>
+        <a href="#dangky" class="btn-action">Đăng Ký Ngay</a>
+    </section>
+
+    <section id="khoahoc" class="section-container">
+        <h2 class="section-title">Hệ Thống Đào Tạo Các Hạng Bằng</h2>
+        
+        <div class="grid-layout">
+            <div class="card">
+                <h3>Bằng Xe Máy A1, A2</h3>
+                <p><strong>Hồ sơ đơn giản:</strong> Chỉ cần CCCD.</p>
+                <p>Hỗ trợ tài liệu mẹo học lý thuyết chuẩn, thi vào ngày thứ 7 và Chủ Nhật hàng tuần.</p>
+            </div>
+
+            <div class="card">
+                <h3>Bằng Ô Tô B1 & B2</h3>
+                <p><strong>Thời gian học:</strong> Linh hoạt theo khung giờ rảnh của học viên.</p>
+                <p>Học thực hành trên xe đời mới (Vios, Accent). Cam kết không phát sinh chi phí xăng xe, thầy giáo.</p>
+            </div>
+
+            <div class="card">
+                <h3>Bằng Xe Tải Hạng C & C1</h3>
+                <p>Dành cho học viên có nhu cầu lái xe tải trọng lớn hoặc kinh doanh vận tải chuyên nghiệp. Đào tạo bài bản, thực hành thực tế.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="dangky" class="section-container" style="background-color: var(--bg-light);">
+        <div class="form-box">
+            <h2 style="text-align: center; margin-top: 0;">Đăng Ký Giữ Suất Học</h2>
+            
+            <form id="secureRegisterForm" onsubmit="handleSubmit(event)">
+                <div class="form-group">
+                    <label for="fullname">Họ và Tên:</label>
+                    <input type="text" id="fullname" required placeholder="Ví dụ: Nguyễn Văn A">
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Số Điện thoại (Zalo):</label>
+                    <input type="tel" id="phone" required placeholder="Ví dụ: 0912345678">
+                </div>
+
+                <div class="form-group">
+                    <label for="course">Hạng Bằng Muốn Học:</label>
+                    <select id="course">
+                        <option value="Hạng A1 (Xe máy)">Hạng A1 (Xe máy)</option>
+                        <option value="Hạng B1 (Ô tô số tự động)">Hạng B1 (Ô tô số tự động)</option>
+                        <option value="Hạng B2 (Ô tô số sàn)">Hạng B2 (Ô tô số sàn)</option>
+                        <option value="Hạng C1 (Xe tải)">Hạng C1 (Xe tải)</option>
+                        <option value="Hạng C (Xe tải)">Hạng C (Xe tải)</option>
+                    </select>
+                </div>
+
+                <button type="submit" id="submitBtn" class="btn-submit">Gửi Thông Tin</button>
+            </form>
+        </div>
+    </section>
+
+    <footer style="background:#111; text-align:center; padding: 25px; color:#444;">
+        <p>© 2026 TUẤN DẠY LÁI XE. Toàn quyền bảo lưu.</p>
+    </footer>
+
+    <script>
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxtevVqq9kKKVBjLkmxsnY-AAna_HVYlsKwiYO3zglcOp00sVwgNonsvGSKTYsQv5iX/exec";
+
+        function handleSubmit(event) {
+            event.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const name = document.getElementById('fullname').value;
+            const phone = document.getElementById('phone').value;
+            const course = document.getElementById('course').value;
+            
+            submitBtn.innerText = "Đang xử lý...";
+            submitBtn.disabled = true;
+
+            const formData = new URLSearchParams();
+            formData.append('fullname', name);
+            formData.append('phone', phone);
+            formData.append('course', course);
+
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.result === "success") {
+                    alert(`Đăng ký thành công! Cảm ơn ${name}, trung tâm sẽ liên hệ với bạn sớm nhất.`);
+                    document.getElementById('secureRegisterForm').reset();
+                } else {
+                    alert("Có lỗi lưu trữ dữ liệu từ hệ thống bảng tính.");
+                }
+            })
+            .catch(error => {
+                console.error('Lỗi kết nối:', error);
+                alert('Có lỗi mạng xảy ra. Vui lòng kiểm tra lại kết nối!');
+            })
+            .finally(() => {
+                submitBtn.innerText = "Gửi Thông Tin";
+                submitBtn.disabled = false;
+            });
+        }
+    </script>
+</body>
+</html>
