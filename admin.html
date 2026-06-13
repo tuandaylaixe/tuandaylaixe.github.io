@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quản lý đăng ký — Tuấn Dạy Lái Xe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Be+Vietnam+Pro:wght@400;500;600;700&family=Roboto+Mono:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --asphalt:#20242A;
+    --asphalt-2:#2C323A;
+    --lane:#F7F3E9;
+    --road-yellow:#FFC72C;
+    --safety-green:#1E7A52;
+    --caution-red:#E0503A;
+    --ink:#1A1D21;
+    --muted:#6B7280;
+    --radius:12px;
+    --shadow:0 8px 24px rgba(32,36,42,0.10);
+    --border:#E4E0D4;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:'Be Vietnam Pro', sans-serif;
+    color:var(--ink);
+    background:var(--lane);
+    min-height:100vh;
+  }
+  h1,h2,h3{
+    font-family:'Oswald', sans-serif;
+    text-transform:uppercase;
+    letter-spacing:0.03em;
+    color:var(--asphalt);
+  }
+
+  /* ===== Login gate ===== */
+  #loginScreen{
+    position:fixed; inset:0;
+    background:var(--asphalt);
+    display:flex; align-items:center; justify-content:center;
+    z-index:100;
+  }
+  .login-box{
+    background:var(--lane);
+    border-radius:var(--radius);
+    padding:40px;
+    width:min(360px, 90vw);
+    box-shadow:var(--shadow);
+    text-align:center;
+  }
+  .login-box .badge{
+    display:inline-block;
+    background:var(--road-yellow);
+    color:var(--asphalt);
+    font-family:'Roboto Mono', monospace;
+    font-weight:700;
+    padding:4px 10px;
+    border-radius:6px;
+    margin-bottom:14px;
+    transform:rotate(-3deg);
+  }
+  .login-box h2{font-size:1.4rem; margin-bottom:6px;}
+  .login-box p{color:var(--muted); font-size:0.9rem; margin-bottom:20px;}
+  .login-box input{
+    width:100%;
+    padding:12px 14px;
+    border-radius:8px;
+    border:1.5px solid var(--border);
+    font-size:1rem;
+    margin-bottom:14px;
+    text-align:center;
+  }
+  .login-box input:focus{outline:3px solid rgba(30,122,82,0.25); border-color:var(--safety-green);}
+  .login-error{color:var(--caution-red); font-size:0.85rem; min-height:18px; margin-bottom:6px;}
+
+  /* ===== Layout ===== */
+  .topbar{
+    background:var(--asphalt);
+    color:var(--lane);
+    padding:18px 24px;
+    display:flex; align-items:center; justify-content:space-between;
+    flex-wrap:wrap; gap:12px;
+  }
+  .topbar .logo{
+    font-family:'Oswald', sans-serif;
+    font-weight:700;
+    font-size:1.2rem;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+    display:flex; align-items:center; gap:10px;
+  }
+  .topbar .logo .badge{
+    background:var(--road-yellow); color:var(--asphalt);
+    font-family:'Roboto Mono', monospace; font-weight:700;
+    font-size:0.8rem; padding:3px 8px; border-radius:6px;
+    transform:rotate(-3deg);
+  }
+  .lane-divider{
+    height:5px; width:100%;
+    background-image:repeating-linear-gradient(90deg, var(--road-yellow) 0 32px, transparent 32px 54px);
+  }
+  main{max-width:1180px; margin:0 auto; padding:28px 20px 60px;}
+
+  .toolbar{
+    display:flex; align-items:center; justify-content:space-between;
+    flex-wrap:wrap; gap:14px;
+    margin-bottom:20px;
+  }
+  .toolbar h1{font-size:1.6rem;}
+  .toolbar .actions{display:flex; gap:10px; flex-wrap:wrap;}
+
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:10px 18px;
+    border-radius:999px;
+    font-weight:700;
+    font-size:0.9rem;
+    border:1.5px solid transparent;
+    cursor:pointer;
+    transition:transform .12s ease, background .15s;
+    font-family:'Be Vietnam Pro', sans-serif;
+  }
+  .btn:active{transform:translateY(1px);}
+  .btn-primary{background:var(--safety-green); color:#fff;}
+  .btn-primary:hover{background:#176043;}
+  .btn-outline{background:#fff; color:var(--asphalt); border-color:var(--border);}
+  .btn-outline:hover{border-color:var(--asphalt);}
+  .btn-danger{background:var(--caution-red); color:#fff;}
+  .btn-danger:hover{background:#c23f2e;}
+  .btn-sm{padding:7px 14px; font-size:0.8rem;}
+  .btn[disabled]{opacity:0.6; cursor:not-allowed;}
+
+  /* stats row */
+  .stat-cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:14px;
+    margin-bottom:24px;
+  }
+  .stat-card{
+    background:#fff; border:1px solid var(--border); border-radius:var(--radius);
+    padding:16px 18px;
+  }
+  .stat-card strong{font-family:'Oswald', sans-serif; font-size:1.6rem; display:block; color:var(--asphalt);}
+  .stat-card span{font-size:0.78rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--muted);}
+
+  /* search */
+  .filter-row{
+    display:flex; gap:12px; flex-wrap:wrap; margin-bottom:16px;
+  }
+  .filter-row input, .filter-row select{
+    padding:10px 14px;
+    border-radius:8px;
+    border:1.5px solid var(--border);
+    font-family:'Be Vietnam Pro', sans-serif;
+    font-size:0.9rem;
+    background:#fff;
+  }
+  .filter-row input{flex:1; min-width:180px;}
+
+  /* table */
+  .table-wrap{
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    overflow:auto;
+    box-shadow:var(--shadow);
+  }
+  table{width:100%; border-collapse:collapse; font-size:0.9rem; min-width:760px;}
+  thead th{
+    text-align:left;
+    background:var(--asphalt);
+    color:var(--lane);
+    font-family:'Oswald', sans-serif;
+    letter-spacing:0.04em;
+    font-size:0.78rem;
+    text-transform:uppercase;
+    padding:14px 16px;
+    position:sticky; top:0;
+  }
+  tbody td{
+    padding:14px 16px;
+    border-bottom:1px solid var(--border);
+    vertical-align:middle;
+  }
+  tbody tr:hover{background:#FBF9F3;}
+  tbody tr:last-child td{border-bottom:none;}
+  .cell-actions{display:flex; gap:8px;}
+  .status-badge{
+    display:inline-block;
+    padding:4px 10px;
+    border-radius:999px;
+    font-size:0.75rem;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+  }
+  .status-moi{background:#FFF1CC; color:#8A6A00;}
+  .status-da-goi{background:#E1EEFF; color:#1F4FA0;}
+  .status-da-dang-ky{background:#DCF3E8; color:var(--safety-green);}
+  .status-huy{background:#FBE0DC; color:var(--caution-red);}
+
+  .empty-state, .loading-state, .error-state{
+    text-align:center; padding:60px 20px; color:var(--muted);
+  }
+  .error-state{color:var(--caution-red);}
+
+  /* modal */
+  .modal-overlay{
+    position:fixed; inset:0;
+    background:rgba(32,36,42,0.5);
+    display:flex; align-items:center; justify-content:center;
+    z-index:90;
+    padding:20px;
+  }
+  .modal-overlay.hidden{display:none;}
+  .modal{
+    background:var(--lane);
+    border-radius:var(--radius);
+    padding:28px;
+    width:min(440px, 100%);
+    box-shadow:var(--shadow);
+  }
+  .modal h3{font-size:1.2rem; margin-bottom:18px;}
+  .field{display:flex; flex-direction:column; gap:6px; margin-bottom:14px;}
+  .field label{font-size:0.82rem; font-weight:600; color:var(--asphalt);}
+  .field input, .field select{
+    padding:11px 13px;
+    border-radius:8px;
+    border:1.5px solid var(--border);
+    font-family:'Be Vietnam Pro', sans-serif;
+    font-size:0.95rem;
+    background:#fff;
+  }
+  .field input:focus, .field select:focus{outline:3px solid rgba(30,122,82,0.25); border-color:var(--safety-green);}
+  .modal-actions{display:flex; justify-content:flex-end; gap:10px; margin-top:8px;}
+
+  .toast{
+    position:fixed; bottom:24px; right:24px;
+    background:var(--asphalt); color:var(--lane);
+    padding:14px 20px; border-radius:10px;
+    font-size:0.9rem; box-shadow:var(--shadow);
+    z-index:120; max-width:320px;
+    border-left:4px solid var(--road-yellow);
+    transition:opacity .3s, transform .3s;
+  }
+  .toast.error{border-left-color:var(--caution-red);}
+  .toast.hidden{opacity:0; transform:translateY(10px); pointer-events:none;}
+
+  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible{
+    outline:3px solid var(--road-yellow);
+    outline-offset:2px;
+  }
+
+  @media (max-width:640px){
+    .toolbar{flex-direction:column; align-items:stretch;}
+    .toolbar .actions{justify-content:stretch;}
+    .toolbar .actions .btn{flex:1; justify-content:center;}
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN GATE -->
+<div id="loginScreen">
+  <div class="login-box">
+    <span class="badge">29-B2</span>
+    <h2>Trang quản trị</h2>
+    <p>Nhập mật khẩu để truy cập danh sách đăng ký học</p>
+    <input type="password" id="loginPassword" placeholder="Mật khẩu quản trị" autocomplete="off">
+    <div class="login-error" id="loginError"></div>
+    <button class="btn btn-primary" style="width:100%; justify-content:center;" id="loginBtn">Đăng nhập</button>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="adminPanel" style="display:none;">
+  <div class="topbar">
+    <div class="logo"><span class="badge">29-B2</span> Quản lý đăng ký — Tuấn Dạy Lái Xe</div>
+    <button class="btn btn-outline btn-sm" id="logoutBtn" style="background:transparent; color:var(--lane); border-color:rgba(247,243,233,0.35);">Đăng xuất</button>
+  </div>
+  <div class="lane-divider"></div>
+
+  <main>
+    <div class="toolbar">
+      <h1>Danh sách học viên đăng ký</h1>
+      <div class="actions">
+        <button class="btn btn-primary" id="addBtn">+ Thêm đăng ký</button>
+        <button class="btn btn-outline" id="refreshBtn">↻ Làm mới</button>
+      </div>
+    </div>
+
+    <div class="stat-cards" id="statCards">
+      <div class="stat-card"><strong id="statTotal">–</strong><span>Tổng đăng ký</span></div>
+      <div class="stat-card"><strong id="statMoi">–</strong><span>Mới / chưa gọi</span></div>
+      <div class="stat-card"><strong id="statConfirmed">–</strong><span>Đã xác nhận</span></div>
+      <div class="stat-card"><strong id="statCanceled">–</strong><span>Đã hủy</span></div>
+    </div>
+
+    <div class="filter-row">
+      <input type="text" id="searchInput" placeholder="Tìm theo tên hoặc số điện thoại...">
+      <select id="courseFilter">
+        <option value="">Tất cả khóa học</option>
+        <option value="B1">B1 — Số tự động</option>
+        <option value="B2">B2 — Số sàn</option>
+        <option value="C">C — Xe tải</option>
+        <option value="A1">A1 — Xe máy</option>
+      </select>
+      <select id="statusFilter">
+        <option value="">Tất cả trạng thái</option>
+        <option value="Mới">Mới</option>
+        <option value="Đã gọi">Đã gọi</option>
+        <option value="Đã đăng ký">Đã đăng ký</option>
+        <option value="Hủy">Hủy</option>
+      </select>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Họ tên</th>
+            <th>Số điện thoại</th>
+            <th>Khóa học</th>
+            <th>Ngày đăng ký</th>
+            <th>Trạng thái</th>
+            <th>Hành động</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <tr><td colspan="6"><div class="loading-state">Đang tải dữ liệu...</div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<!-- EDIT / ADD MODAL -->
+<div class="modal-overlay hidden" id="editModal">
+  <div class="modal">
+    <h3 id="modalTitle">Sửa thông tin đăng ký</h3>
+    <form id="editForm">
+      <div class="field">
+        <label for="f_name">Họ và tên</label>
+        <input type="text" id="f_name" required>
+      </div>
+      <div class="field">
+        <label for="f_phone">Số điện thoại</label>
+        <input type="tel" id="f_phone" required>
+      </div>
+      <div class="field">
+        <label for="f_course">Khóa học</label>
+        <select id="f_course">
+          <option>B1 — Số tự động</option>
+          <option>B2 — Số sàn</option>
+          <option>C — Xe tải</option>
+          <option>A1 — Xe máy</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="f_date">Ngày đăng ký</label>
+        <input type="date" id="f_date">
+      </div>
+      <div class="field">
+        <label for="f_status">Trạng thái</label>
+        <select id="f_status">
+          <option>Mới</option>
+          <option>Đã gọi</option>
+          <option>Đã đăng ký</option>
+          <option>Hủy</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" id="cancelEdit">Hủy</button>
+        <button type="submit" class="btn btn-primary" id="saveEdit">Lưu</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM MODAL -->
+<div class="modal-overlay hidden" id="deleteModal">
+  <div class="modal">
+    <h3>Xóa đăng ký này?</h3>
+    <p style="color:var(--muted); margin-bottom:18px;">Hành động này không thể hoàn tác. Bạn có chắc chắn muốn xóa thông tin của <strong id="deleteName"></strong>?</p>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-outline" id="cancelDelete">Hủy</button>
+      <button type="button" class="btn btn-danger" id="confirmDelete">Xóa</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast hidden" id="toast"></div>
+
+<script>
+  // ===== CONFIG =====
+  // Đường dẫn Google Apps Script Web App (kết nối Google Sheet)
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxtevVqq9kKKVBjLkmxsnY-AAna_HVYlsKwiYO3zglcOp00sVwgNonsvGSKTYsQv5iX/exec";
+  // Mật khẩu đăng nhập trang quản trị (chỉ là rào chắn cơ bản, không thay thế bảo mật thật)
+  const ADMIN_PASSWORD = "tuan2026";
+
+  let registrations = [];
+  let editingId = null; // null = đang thêm mới
+  let deletingId = null;
+
+  // ===== LOGIN =====
+  const loginScreen = document.getElementById('loginScreen');
+  const adminPanel = document.getElementById('adminPanel');
+  const loginBtn = document.getElementById('loginBtn');
+  const loginPassword = document.getElementById('loginPassword');
+  const loginError = document.getElementById('loginError');
+
+  function tryLogin(){
+    if (loginPassword.value === ADMIN_PASSWORD){
+      sessionStorage.setItem('admin_logged_in', '1');
+      loginScreen.style.display = 'none';
+      adminPanel.style.display = 'block';
+      loadData();
+    } else {
+      loginError.textContent = 'Sai mật khẩu, vui lòng thử lại.';
+    }
+  }
+  loginBtn.addEventListener('click', tryLogin);
+  loginPassword.addEventListener('keydown', e => { if(e.key === 'Enter') tryLogin(); });
+
+  if (sessionStorage.getItem('admin_logged_in') === '1'){
+    loginScreen.style.display = 'none';
+    adminPanel.style.display = 'block';
+    loadData();
+  }
+
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    sessionStorage.removeItem('admin_logged_in');
+    location.reload();
+  });
+
+  // ===== TOAST =====
+  const toastEl = document.getElementById('toast');
+  function showToast(msg, isError){
+    toastEl.textContent = msg;
+    toastEl.classList.toggle('error', !!isError);
+    toastEl.classList.remove('hidden');
+    setTimeout(() => toastEl.classList.add('hidden'), 3200);
+  }
+
+  // ===== DATA LOADING =====
+  const tableBody = document.getElementById('tableBody');
+
+  async function loadData(){
+    tableBody.innerHTML = '<tr><td colspan="6"><div class="loading-state">Đang tải dữ liệu...</div></td></tr>';
+    try{
+      const res = await fetch(SCRIPT_URL + '?action=list');
+      if(!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+      registrations = Array.isArray(data) ? data : (data.data || []);
+      renderTable();
+      updateStats();
+    } catch(err){
+      tableBody.innerHTML = '<tr><td colspan="6"><div class="error-state">Không tải được dữ liệu. Kiểm tra lại liên kết Google Apps Script đã được triển khai đúng và cho phép "Anyone" truy cập chưa.<br>(' + err.message + ')</div></td></tr>';
+    }
+  }
+
+  function updateStats(){
+    document.getElementById('statTotal').textContent = registrations.length;
+    document.getElementById('statMoi').textContent = registrations.filter(r => (r.status||'Mới') === 'Mới').length;
+    document.getElementById('statConfirmed').textContent = registrations.filter(r => r.status === 'Đã đăng ký').length;
+    document.getElementById('statCanceled').textContent = registrations.filter(r => r.status === 'Hủy').length;
+  }
+
+  function statusClass(status){
+    switch(status){
+      case 'Đã gọi': return 'status-da-goi';
+      case 'Đã đăng ký': return 'status-da-dang-ky';
+      case 'Hủy': return 'status-huy';
+      default: return 'status-moi';
+    }
+  }
+
+  function renderTable(){
+    const search = document.getElementById('searchInput').value.trim().toLowerCase();
+    const courseF = document.getElementById('courseFilter').value;
+    const statusF = document.getElementById('statusFilter').value;
+
+    const filtered = registrations.filter(r => {
+      const name = (r.name || '').toLowerCase();
+      const phone = (r.phone || '').toLowerCase();
+      const matchesSearch = !search || name.includes(search) || phone.includes(search);
+      const matchesCourse = !courseF || (r.course || '').startsWith(courseF);
+      const matchesStatus = !statusF || (r.status || 'Mới') === statusF;
+      return matchesSearch && matchesCourse && matchesStatus;
+    });
+
+    if(filtered.length === 0){
+      tableBody.innerHTML = '<tr><td colspan="6"><div class="empty-state">Không có dữ liệu phù hợp.</div></td></tr>';
+      return;
+    }
+
+    tableBody.innerHTML = filtered.map(r => `
+      <tr>
+        <td>${escapeHtml(r.name || '')}</td>
+        <td>${escapeHtml(r.phone || '')}</td>
+        <td>${escapeHtml(r.course || '')}</td>
+        <td>${escapeHtml(formatDate(r.date))}</td>
+        <td><span class="status-badge ${statusClass(r.status)}">${escapeHtml(r.status || 'Mới')}</span></td>
+        <td class="cell-actions">
+          <button class="btn btn-outline btn-sm" data-edit="${r.id}">Sửa</button>
+          <button class="btn btn-danger btn-sm" data-delete="${r.id}">Xóa</button>
+        </td>
+      </tr>
+    `).join('');
+
+    tableBody.querySelectorAll('[data-edit]').forEach(btn => {
+      btn.addEventListener('click', () => openEditModal(btn.dataset.edit));
+    });
+    tableBody.querySelectorAll('[data-delete]').forEach(btn => {
+      btn.addEventListener('click', () => openDeleteModal(btn.dataset.delete));
+    });
+  }
+
+  function formatDate(d){
+    if(!d) return '';
+    const date = new Date(d);
+    if(isNaN(date.getTime())) return d;
+    return date.toLocaleDateString('vi-VN');
+  }
+
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  document.getElementById('searchInput').addEventListener('input', renderTable);
+  document.getElementById('courseFilter').addEventListener('change', renderTable);
+  document.getElementById('statusFilter').addEventListener('change', renderTable);
+  document.getElementById('refreshBtn').addEventListener('click', loadData);
+
+  // ===== EDIT / ADD MODAL =====
+  const editModal = document.getElementById('editModal');
+  const editForm = document.getElementById('editForm');
+  const modalTitle = document.getElementById('modalTitle');
+
+  function openEditModal(id){
+    const reg = registrations.find(r => String(r.id) === String(id));
+    if(!reg) return;
+    editingId = id;
+    modalTitle.textContent = 'Sửa thông tin đăng ký';
+    document.getElementById('f_name').value = reg.name || '';
+    document.getElementById('f_phone').value = reg.phone || '';
+    setSelectValue('f_course', reg.course || 'B1 — Số tự động');
+    document.getElementById('f_date').value = toInputDate(reg.date);
+    setSelectValue('f_status', reg.status || 'Mới');
+    editModal.classList.remove('hidden');
+  }
+
+  document.getElementById('addBtn').addEventListener('click', () => {
+    editingId = null;
+    modalTitle.textContent = 'Thêm đăng ký mới';
+    document.getElementById('f_name').value = '';
+    document.getElementById('f_phone').value = '';
+    setSelectValue('f_course', 'B1 — Số tự động');
+    document.getElementById('f_date').value = toInputDate(new Date());
+    setSelectValue('f_status', 'Mới');
+    editModal.classList.remove('hidden');
+  });
+
+  function setSelectValue(id, value){
+    const el = document.getElementById(id);
+    let matched = false;
+    for(const opt of el.options){
+      if(opt.value === value || opt.text === value || opt.text.startsWith(value)){
+        el.value = opt.value;
+        matched = true;
+        break;
+      }
+    }
+    if(!matched) el.selectedIndex = 0;
+  }
+
+  function toInputDate(d){
+    if(!d) return '';
+    const date = new Date(d);
+    if(isNaN(date.getTime())) return '';
+    return date.toISOString().slice(0,10);
+  }
+
+  document.getElementById('cancelEdit').addEventListener('click', () => editModal.classList.add('hidden'));
+
+  editForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const saveBtn = document.getElementById('saveEdit');
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Đang lưu...';
+
+    const payload = {
+      name: document.getElementById('f_name').value.trim(),
+      phone: document.getElementById('f_phone').value.trim(),
+      course: document.getElementById('f_course').value,
+      date: document.getElementById('f_date').value,
+      status: document.getElementById('f_status').value
+    };
+
+    try{
+      let body;
+      if(editingId !== null){
+        body = { action: 'update', id: editingId, data: payload };
+      } else {
+        body = { action: 'add', data: payload };
+      }
+      const res = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(body)
+      });
+      const result = await res.json();
+      if(result && result.error) throw new Error(result.error);
+
+      showToast(editingId !== null ? 'Đã lưu thay đổi.' : 'Đã thêm đăng ký mới.');
+      editModal.classList.add('hidden');
+      await loadData();
+    } catch(err){
+      showToast('Có lỗi xảy ra: ' + err.message, true);
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.textContent = 'Lưu';
+    }
+  });
+
+  // ===== DELETE MODAL =====
+  const deleteModal = document.getElementById('deleteModal');
+
+  function openDeleteModal(id){
+    const reg = registrations.find(r => String(r.id) === String(id));
+    if(!reg) return;
+    deletingId = id;
+    document.getElementById('deleteName').textContent = reg.name || '';
+    deleteModal.classList.remove('hidden');
+  }
+
+  document.getElementById('cancelDelete').addEventListener('click', () => deleteModal.classList.add('hidden'));
+
+  document.getElementById('confirmDelete').addEventListener('click', async () => {
+    const btn = document.getElementById('confirmDelete');
+    btn.disabled = true;
+    btn.textContent = 'Đang xóa...';
+    try{
+      const res = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'delete', id: deletingId })
+      });
+      const result = await res.json();
+      if(result && result.error) throw new Error(result.error);
+
+      showToast('Đã xóa đăng ký.');
+      deleteModal.classList.add('hidden');
+      await loadData();
+    } catch(err){
+      showToast('Có lỗi xảy ra: ' + err.message, true);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Xóa';
+    }
+  });
+</script>
+
+</body>
+</html>
