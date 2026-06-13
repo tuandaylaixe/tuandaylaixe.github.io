@@ -484,10 +484,10 @@
     const statusF = document.getElementById('statusFilter').value;
 
     const filtered = registrations.filter(r => {
-      const name = (r.name || '').toLowerCase();
-      const phone = (r.phone || '').toLowerCase();
+      const name = String(r.name || '').toLowerCase();
+      const phone = String(r.phone || '').toLowerCase();
       const matchesSearch = !search || name.includes(search) || phone.includes(search);
-      const matchesCourse = !courseF || (r.course || '').startsWith(courseF);
+      const matchesCourse = !courseF || String(r.course || '').startsWith(courseF);
       const matchesStatus = !statusF || (r.status || 'Mới') === statusF;
       return matchesSearch && matchesCourse && matchesStatus;
     });
@@ -566,9 +566,10 @@
 
   function setSelectValue(id, value){
     const el = document.getElementById(id);
+    const val = String(value || '');
     let matched = false;
     for(const opt of el.options){
-      if(opt.value === value || opt.text === value || opt.text.startsWith(value)){
+      if(opt.value === val || opt.text === val || opt.text.startsWith(val)){
         el.value = opt.value;
         matched = true;
         break;
